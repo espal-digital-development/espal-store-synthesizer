@@ -1,0 +1,10 @@
+*.test
+*.exe
+*.dll
+*.so
+*.dylib
+.DS_store
+.idea
+espal-run
+panic.txt
+Thumbs.db
