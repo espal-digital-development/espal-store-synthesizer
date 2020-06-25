@@ -5,6 +5,6 @@
 *.dylib
 .DS_store
 .idea
-espal-run
+espal-store-synthesizer
 panic.txt
 Thumbs.db

@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"espaldd.com/espal-core/cmd/espal-store-synthesizer/packages"
+	"github.com/espal-digital-development/espal-store-synthesizer/packages"
 	"github.com/juju/errors"
 	"github.com/mattn/go-zglob"
 )
@@ -60,7 +60,8 @@ func main() {
 		if err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
-		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+"_synthesized.go", entityData, 0644); err != nil {
+		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+
+			"_synthesized.go", entityData, 0644); err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
 
@@ -68,7 +69,8 @@ func main() {
 		if err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
-		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+"_synthesized_test.go", entityTestData, 0644); err != nil {
+		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+
+			"_synthesized_test.go", entityTestData, 0644); err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
 
@@ -80,7 +82,8 @@ func main() {
 			if err != nil {
 				log.Fatal(errors.ErrorStack(err))
 			}
-			if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+"_synthesized.go", entityData, 0644); err != nil {
+			if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+
+				"_synthesized.go", entityData, 0644); err != nil {
 				log.Fatal(errors.ErrorStack(err))
 			}
 
@@ -88,7 +91,8 @@ func main() {
 			if err != nil {
 				log.Fatal(errors.ErrorStack(err))
 			}
-			if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+"_synthesized_test.go", entityTestData, 0644); err != nil {
+			if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+
+				"_synthesized_test.go", entityTestData, 0644); err != nil {
 				log.Fatal(errors.ErrorStack(err))
 			}
 		}

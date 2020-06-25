@@ -12,47 +12,47 @@ type Property struct {
 }
 
 // Name returns the property's name.
-func (property *Property) Name() string {
-	return property.name
+func (p *Property) Name() string {
+	return p.name
 }
 
 // SetName sets the property's name.
-func (property *Property) SetName(name string) {
-	property.name = name
+func (p *Property) SetName(name string) {
+	p.name = name
 }
 
 // Type returns the property's type.
-func (property *Property) Type() string {
-	return property._type
+func (p *Property) Type() string {
+	return p._type
 }
 
 // SetType sets the property's type.
-func (property *Property) SetType(_type string) {
-	property._type = _type
+func (p *Property) SetType(_type string) {
+	p._type = _type
 }
 
 // Comment returns the property's comment.
-func (property *Property) Comment() string {
-	return property.comment
+func (p *Property) Comment() string {
+	return p.comment
 }
 
 // SetComment sets the property's comment.
-func (property *Property) SetComment(comment string) {
-	property.comment = comment
+func (p *Property) SetComment(comment string) {
+	p.comment = comment
 }
 
 // GetterName returns the property's getter method name for the entity.
-func (property *Property) GetterName() string {
-	if property.name == "_type" {
+func (p *Property) GetterName() string {
+	if p.name == "_type" {
 		return "Type"
 	}
-	return strings.Title(property.name)
+	return strings.Title(p.name)
 }
 
 // SetterName returns the property's setter method name for the entity.
-func (property *Property) SetterName() string {
-	if property.name == "_type" {
+func (p *Property) SetterName() string {
+	if p.name == "_type" {
 		return "SetType"
 	}
-	return "Set" + strings.Title(property.name)
+	return "Set" + strings.Title(p.name)
 }

@@ -1,4 +1,4 @@
-module espaldd.com/espal-core/cmd/espal-store-synthesizer
+module github.com/espal-digital-development/espal-store-synthesizer
 
 go 1.14
 

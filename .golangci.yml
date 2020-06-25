@@ -1,0 +1,52 @@
+run:
+  concurrency: 4
+  timeout: 30s # First run might be very slow. Afterwards it should be fast
+  issues-exit-code: 25
+  # linters-settings:
+linters:
+  enable:
+    # TODO :: Unquoted linters without an extra comments still need to
+    # be enabled and then have the code fixed.
+    - bodyclose
+    - golint
+    - stylecheck
+    # - gosec
+    - interfacer
+    - unconvert
+    - goconst
+    - gocognit
+    - asciicheck
+    - gofmt
+    - goimports
+    - depguard # This probably needs custom configuration
+    - misspell
+    - unparam
+    - gochecknoinits
+    - whitespace
+    - goprintffuncname
+    - gomnd
+    - goerr113
+    - gomodguard # This probably needs custom configuration
+    - testpackage
+    - nestif
+    - nolintlint
+    - dupl
+
+    # These are enabled, but can slow down global scanning.
+    # Disable them if you want to scan other things more quickly.
+    # - gocyclo
+    - lll
+    # - dogsled
+    # - nakedret
+    # - prealloc
+    # - scopelint
+    # - gocritic
+    # - funlen
+    # - godot
+
+    # Unused (mutliple reasons):
+    # - rowserrcheck # It already checks the extra error
+    # - maligned # These changes are very small (might be fun for some tweaking later)
+    # - gochecknoglobals # Can't disable test files, which uses many variable
+    # - godox # Maybe be handy to quickly find TODO's, but might as well just use search
+    # - wsl # Too aggressive

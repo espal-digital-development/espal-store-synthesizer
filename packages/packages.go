@@ -59,39 +59,39 @@ type Package struct {
 }
 
 // Path returns the package's location on the disk.
-func (pkg *Package) Path() string {
-	return pkg.path
+func (p *Package) Path() string {
+	return p.path
 }
 
 // Store returns the package's store object.
-func (pkg *Package) Store() *Store {
-	return pkg.store
+func (p *Package) Store() *Store {
+	return p.store
 }
 
 // MainEntity returns the package's main entity.
-func (pkg *Package) MainEntity() *Entity {
-	return pkg.mainEntity
+func (p *Package) MainEntity() *Entity {
+	return p.mainEntity
 }
 
 // Entities returns all the package's entities, excluding the main entity.
-func (pkg *Package) Entities() []*Entity {
-	return pkg.entities
+func (p *Package) Entities() []*Entity {
+	return p.entities
 }
 
 // BuildMetaData collects all the package information from the path
 // and builds and fills the necessary objects.
-func (pkg *Package) BuildMetaData(path string) error {
+func (p *Package) BuildMetaData(path string) error {
 	entries, err := zglob.Glob(path + "/*.go")
 	if err != nil {
 		return errors.Trace(err)
 	}
 
 	chunks := strings.Split(path, "/")
-	pkg.path = path
-	pkg.name = chunks[len(chunks)-1]
+	p.path = path
+	p.name = chunks[len(chunks)-1]
 
 	importPath := strings.Builder{}
-	importPath.WriteString("espaldd.com/espal-core/stores")
+	importPath.WriteString("github.com/espal-digital-development/espal-core/stores")
 	var startCollecting bool
 	for _, chunk := range chunks {
 		if chunk == "stores" {
@@ -102,7 +102,7 @@ func (pkg *Package) BuildMetaData(path string) error {
 		}
 		importPath.WriteString("/" + chunk)
 	}
-	pkg.importPath = importPath.String()
+	p.importPath = importPath.String()
 
 	// Wipe any existing synthetized files in case a new structure is chosen
 	for _, entry := range entries {
@@ -121,18 +121,18 @@ func (pkg *Package) BuildMetaData(path string) error {
 		switch {
 		case strings.HasSuffix(entry, "store.go"):
 			hasStoreFile = true
-		case strings.HasSuffix(entry, pkg.name+".go"):
+		case strings.HasSuffix(entry, p.name+".go"):
 			hasEntityFile = true
-			mainEntityFileName = pkg.name
+			mainEntityFileName = p.name
 			// TODO :: These extra checks could just become:
 			// - @synthesize-store
 			// - @synthesize-main-entity
 			// This would be much more implicit and doesn't need exceptions in this parser
-		case strings.HasSuffix(entry, pkg.name+"entity.go"):
+		case strings.HasSuffix(entry, p.name+"entity.go"):
 			// This suffix variant is unique as Store as an entity is equally reserved as the Store (datastore) object name
 			hasEntityFile = true
-			mainEntityFileName = pkg.name + "entity"
-		case pkg.name == "product" && strings.HasSuffix(entry, "model.go"):
+			mainEntityFileName = p.name + "entity"
+		case p.name == "product" && strings.HasSuffix(entry, "model.go"):
 			// A weird spinoff for a more complex store where the Model is the main entity and not the package name's equivalent
 			hasEntityFile = true
 			mainEntityFileName = "model"
@@ -150,14 +150,14 @@ func (pkg *Package) BuildMetaData(path string) error {
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if err = pkg.setMainEntityFromFile(entityFileBytes); err != nil {
+	if err = p.setMainEntityFromFile(entityFileBytes); err != nil {
 		return errors.Trace(err)
 	}
 	storeFileBytes, err := ioutil.ReadFile(path + "/store.go")
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if err := pkg.storeFromFile(storeFileBytes); err != nil {
+	if err := p.storeFromFile(storeFileBytes); err != nil {
 		return errors.Trace(err)
 	}
 
@@ -172,7 +172,7 @@ func (pkg *Package) BuildMetaData(path string) error {
 		if strings.HasSuffix(entry, "store.go") {
 			continue
 		}
-		if strings.HasSuffix(entry, pkg.name+".go") {
+		if strings.HasSuffix(entry, p.name+".go") {
 			continue
 		}
 		fileBytes, err := ioutil.ReadFile(entry)
@@ -184,17 +184,17 @@ func (pkg *Package) BuildMetaData(path string) error {
 			continue
 		}
 
-		importBlock := pkg.reImportBlockCheck.FindAllSubmatch(fileBytes, 1)
-		importStatements := pkg.reImportStatementsCheck.FindAllSubmatch(importBlock[0][1], -1)
+		importBlock := p.reImportBlockCheck.FindAllSubmatch(fileBytes, 1)
+		importStatements := p.reImportStatementsCheck.FindAllSubmatch(importBlock[0][1], -1)
 		for k := range importStatements {
 			// fmt is a bogus import and unneeded for interface methods
 			if string(importStatements[k][1]) == "fmt" {
 				continue
 			}
-			pkg.store.addImport(&Import{path: string(importStatements[k][1])})
+			p.store.addImport(&Import{path: string(importStatements[k][1])})
 		}
 
-		storeMethods := pkg.rePublicMethodsCheck.FindAllSubmatch(fileBytes, -1)
+		storeMethods := p.rePublicMethodsCheck.FindAllSubmatch(fileBytes, -1)
 		for _, method := range storeMethods {
 			function := &Function{
 				name: string(method[1]),
@@ -209,7 +209,8 @@ func (pkg *Package) BuildMetaData(path string) error {
 				})
 			}
 
-			returnValues := bytes.Split(bytes.TrimRight(bytes.TrimRight(bytes.TrimLeft(bytes.Trim(method[3], " "), "("), " {"), ")"), []byte(", "))
+			returnValues := bytes.Split(bytes.TrimRight(bytes.TrimRight(bytes.TrimLeft(
+				bytes.Trim(method[3], " "), "("), " {"), ")"), []byte(", "))
 			for _, returnValue := range returnValues {
 				returnValueParts := bytes.SplitN(returnValue, []byte(" "), 2)
 				function.returnValues = append(function.returnValues, &FunctionReturnValue{
@@ -218,12 +219,12 @@ func (pkg *Package) BuildMetaData(path string) error {
 				})
 			}
 
-			pkg.store.methods = append(pkg.store.methods, function)
+			p.store.methods = append(p.store.methods, function)
 		}
 	}
 
-	pkg.store.mainEntity = pkg.mainEntity
-	pkg.mainEntity.store = pkg.store
+	p.store.mainEntity = p.mainEntity
+	p.mainEntity.store = p.store
 
 	for _, entry := range entries {
 		// Extra safety measure to always ignore synthetized files
@@ -239,7 +240,7 @@ func (pkg *Package) BuildMetaData(path string) error {
 		if entry == path+"/store.go" {
 			continue
 		}
-		if entry == path+"/"+pkg.name+".go" {
+		if entry == path+"/"+p.name+".go" {
 			continue
 		}
 
@@ -250,12 +251,12 @@ func (pkg *Package) BuildMetaData(path string) error {
 
 		// Cheap checks, but ok as consistent pattern is upheld
 		if bytes.Contains(fileBytes, []byte("// @synthesize\n")) {
-			if err := pkg.addEntityFromFile(fileBytes); err != nil {
+			if err := p.addEntityFromFile(fileBytes); err != nil {
 				return errors.Trace(err)
 			}
 		} else {
 			// // TODO :: 77777 :: Misc files need to add to the correct Entity to also share things like the imports
-			if err := pkg.addEntityFromFile(fileBytes); err != nil {
+			if err := p.addEntityFromFile(fileBytes); err != nil {
 				continue
 			}
 		}
@@ -264,34 +265,34 @@ func (pkg *Package) BuildMetaData(path string) error {
 	return nil
 }
 
-func (pkg *Package) storeFromFile(b []byte) error {
-	if pkg.mainEntity == nil {
+func (p *Package) storeFromFile(b []byte) error {
+	if p.mainEntity == nil {
 		return errors.Errorf("Cannot set the store before the main entity is known")
 	}
-	pkg.store = &Store{
-		_package:            pkg,
-		mainEntity:          pkg.mainEntity,
+	p.store = &Store{
+		_package:            p,
+		mainEntity:          p.mainEntity,
 		hasPrivateNewMethod: bytes.Contains(b, []byte("\nfunc new(")),
 		hasPublicNewMethod:  bytes.Contains(b, []byte("\nfunc New(")),
 		hasBuildQueriesFunc: bytes.Contains(b, []byte(" buildQueries() ")),
 	}
 
-	structBlockMatches := pkg.reStoreStructBlockCheck.FindAllSubmatch(b, 1)
+	structBlockMatches := p.reStoreStructBlockCheck.FindAllSubmatch(b, 1)
 	if len(structBlockMatches) != 1 {
-		return errors.Errorf("Not one struct found in `%s`", pkg.name)
+		return errors.Errorf("Not one struct found in `%s`", p.name)
 	}
-	pkg.store.structName = string(structBlockMatches[0][1])
+	p.store.structName = string(structBlockMatches[0][1])
 
 	alreadyImported := make(map[string]bool)
-	importBlock := pkg.reImportBlockCheck.FindAllSubmatch(b, 1)
-	importStatements := pkg.reImportStatementsCheck.FindAllSubmatch(importBlock[0][1], -1)
+	importBlock := p.reImportBlockCheck.FindAllSubmatch(b, 1)
+	importStatements := p.reImportStatementsCheck.FindAllSubmatch(importBlock[0][1], -1)
 
-	methods := pkg.rePublicMethodsCheck.FindAllSubmatch(b, -1)
-	services := pkg.reServicesCheck.FindAllSubmatch(structBlockMatches[0][2], -1)
+	methods := p.rePublicMethodsCheck.FindAllSubmatch(b, -1)
+	services := p.reServicesCheck.FindAllSubmatch(structBlockMatches[0][2], -1)
 
 	if (len(services) > 0 || len(methods) > 0) && !bytes.Contains(b, []byte("\nfunc New(")) {
 		for _, service := range services {
-			pkg.store.services = append(pkg.store.services, &Service{
+			p.store.services = append(p.store.services, &Service{
 				name:        string(service[1]),
 				packageName: string(service[2]),
 			})
@@ -302,7 +303,7 @@ func (pkg *Package) storeFromFile(b []byte) error {
 				parts := strings.Split(string(statement[1]), "/")
 				packagePart := parts[len(parts)-1]
 				if strings.HasPrefix(string(service[2]), packagePart) {
-					pkg.store.imports = append(pkg.store.imports, &Import{
+					p.store.imports = append(p.store.imports, &Import{
 						path: string(statement[1]),
 					})
 					alreadyImported[string(statement[1])] = true
@@ -341,7 +342,8 @@ func (pkg *Package) storeFromFile(b []byte) error {
 						returnValue.name = string(returnValueChunks[0])
 						returnValue._type = string(returnValueChunks[1])
 					} else {
-						return errors.Errorf("Return values for `%s` : `%s` should be either 1 or 2, not %d", pkg.name, pkg.store.structName, len(returnValueChunks))
+						return errors.Errorf("Return values for `%s` : `%s` should be either 1 or 2, not %d",
+							p.name, p.store.structName, len(returnValueChunks))
 					}
 					function.returnValues = append(function.returnValues, returnValue)
 				}
@@ -350,14 +352,14 @@ func (pkg *Package) storeFromFile(b []byte) error {
 					_type: string(method[4]),
 				})
 			}
-			pkg.store.methods = append(pkg.store.methods, function)
+			p.store.methods = append(p.store.methods, function)
 
 			// If the method definition doesn't contain a dot (package call) then skip
 			if !bytes.Contains(method[2], []byte(".")) {
 				continue
 			}
 
-			packagesInMethod := pkg.rePackagesInMethodsCheck.FindAllSubmatch(method[0], -1)
+			packagesInMethod := p.rePackagesInMethodsCheck.FindAllSubmatch(method[0], -1)
 			for _, packageInMethod := range packagesInMethod {
 				for _, statement := range importStatements {
 					if _, ok := alreadyImported[string(statement[1])]; ok {
@@ -366,7 +368,7 @@ func (pkg *Package) storeFromFile(b []byte) error {
 					parts := strings.Split(string(statement[1]), "/")
 					packagePart := parts[len(parts)-1]
 					if strings.HasPrefix(string(packageInMethod[0]), packagePart) {
-						pkg.store.imports = append(pkg.store.imports, &Import{
+						p.store.imports = append(p.store.imports, &Import{
 							path: string(statement[1]),
 						})
 						alreadyImported[string(statement[1])] = true
@@ -377,16 +379,16 @@ func (pkg *Package) storeFromFile(b []byte) error {
 		}
 	}
 
-	if !pkg.store.ContainsFetchMethod() {
+	if !p.store.ContainsFetchMethod() {
 		// Stores generally always handle errors so it uses the main wrapping library
-		pkg.store.imports = append(pkg.store.imports, &Import{
+		p.store.imports = append(p.store.imports, &Import{
 			path: "github.com/juju/errors",
 		})
 
 		var databaseAlreadyImported bool
 		var databaseSQLAlreadyImported bool
-		for _, importChunk := range pkg.store.imports {
-			if importChunk.path == "espaldd.com/espal-core/database" {
+		for _, importChunk := range p.store.imports {
+			if importChunk.path == "github.com/espal-digital-development/espal-core/database" {
 				databaseAlreadyImported = true
 			}
 			if importChunk.path == "database/sql" {
@@ -394,12 +396,12 @@ func (pkg *Package) storeFromFile(b []byte) error {
 			}
 		}
 		if !databaseAlreadyImported {
-			pkg.store.imports = append(pkg.store.imports, &Import{
-				path: "espaldd.com/espal-core/database",
+			p.store.imports = append(p.store.imports, &Import{
+				path: "github.com/espal-digital-development/espal-core/database",
 			})
 		}
 		if !databaseSQLAlreadyImported {
-			pkg.store.imports = append(pkg.store.imports, &Import{
+			p.store.imports = append(p.store.imports, &Import{
 				path: "database/sql",
 			})
 		}
@@ -408,40 +410,40 @@ func (pkg *Package) storeFromFile(b []byte) error {
 	return nil
 }
 
-func (pkg *Package) setMainEntityFromFile(b []byte) (err error) {
-	pkg.mainEntity, err = pkg.entityFromFile(b)
+func (p *Package) setMainEntityFromFile(b []byte) (err error) {
+	p.mainEntity, err = p.entityFromFile(b)
 	return
 }
 
-func (pkg *Package) addEntityFromFile(b []byte) error {
-	entity, err := pkg.entityFromFile(b)
+func (p *Package) addEntityFromFile(b []byte) error {
+	entity, err := p.entityFromFile(b)
 	if err != nil {
 		return errors.Trace(err)
 	}
-	pkg.entities = append(pkg.entities, entity)
+	p.entities = append(p.entities, entity)
 	return nil
 }
 
-func (pkg *Package) entityFromFile(b []byte) (*Entity, error) {
+func (p *Package) entityFromFile(b []byte) (*Entity, error) {
 	entity := &Entity{
-		_package:            pkg,
+		_package:            p,
 		properties:          []*Property{},
 		hasPrivateNewMethod: bytes.Contains(b, []byte("\nfunc new(")),
 		hasPublicNewMethod:  bytes.Contains(b, []byte("\nfunc New(")),
 	}
 
-	occurrences := len(pkg.reSynthesizeOccurrences.FindAll(b, 2))
+	occurrences := len(p.reSynthesizeOccurrences.FindAll(b, 2))
 	if occurrences != 1 {
-		return nil, errors.Errorf("`%s` entity files must have one and only one @synthesize marking", pkg.path)
+		return nil, errors.Errorf("`%s` entity files must have one and only one @synthesize marking", p.path)
 	}
 
-	structBlockMatches := pkg.reStructBlockCheck.FindSubmatch(b)
+	structBlockMatches := p.reStructBlockCheck.FindSubmatch(b)
 
 	entity.name = string(structBlockMatches[1])
 	entity.interfaceName = strings.Title(entity.name) + "Entity"
 
-	structLines := pkg.reStructBlockCheck.Find(b)
-	lines := pkg.rePropertyLinesCheck.FindAllSubmatch(structLines, -1)
+	structLines := p.reStructBlockCheck.Find(b)
+	lines := p.rePropertyLinesCheck.FindAllSubmatch(structLines, -1)
 	for _, line := range lines {
 		property := &Property{
 			name: string(line[1]),
@@ -464,9 +466,9 @@ func (pkg *Package) entityFromFile(b []byte) (*Entity, error) {
 		entity.addImport("bytes")
 	}
 
-	extraMethods := pkg.reExtraInterfaceMethods.FindSubmatch(b)
+	extraMethods := p.reExtraInterfaceMethods.FindSubmatch(b)
 	if len(extraMethods) == 3 && bytes.Equal(extraMethods[1], []byte(strings.ToLower(entity.name))) {
-		methods := pkg.reInterfaceMethodLinesCheck.FindAllSubmatch(b, -1)
+		methods := p.reInterfaceMethodLinesCheck.FindAllSubmatch(b, -1)
 		for _, method := range methods {
 			interfaceMethod := &Function{
 				parameters: []*FunctionParameter{},
@@ -484,7 +486,8 @@ func (pkg *Package) entityFromFile(b []byte) (*Entity, error) {
 				}
 			}
 
-			returnValuesChunks := strings.Split(string(bytes.TrimRight(bytes.TrimLeft(bytes.Trim(method[3], " "), "("), ")")), ",")
+			returnValuesChunks := strings.Split(string(bytes.TrimRight(bytes.TrimLeft(
+				bytes.Trim(method[3], " "), "("), ")")), ",")
 			if len(returnValuesChunks) > 0 && returnValuesChunks[0] != "" {
 				for _, returnValuesChunk := range returnValuesChunks {
 					returnValue := strings.Split(strings.Trim(returnValuesChunk, " "), " ")
@@ -508,12 +511,12 @@ func (pkg *Package) entityFromFile(b []byte) (*Entity, error) {
 	// Register the table name/alias and if it's already uses
 	// the needed methods
 	if entity.IsPrimaryEntity() {
-		tableNameCheck := pkg.reTableNameCheck.FindSubmatch(b)
+		tableNameCheck := p.reTableNameCheck.FindSubmatch(b)
 		if len(tableNameCheck) > 0 {
 			entity.tableName = string(tableNameCheck[1])
 		}
 
-		tableAliasCheck := pkg.reTableAliasCheck.FindSubmatch(b)
+		tableAliasCheck := p.reTableAliasCheck.FindSubmatch(b)
 		if len(tableAliasCheck) > 0 {
 			entity.tableAlias = string(tableAliasCheck[1])
 		}
@@ -533,6 +536,14 @@ func lowerFirst(s string) string {
 	return string(unicode.ToLower(r)) + s[n:]
 }
 
+func getFirstLetterLowercase(s string) string {
+	if s == "" {
+		return ""
+	}
+	r, _ := utf8.DecodeRuneInString(s)
+	return string(unicode.ToLower(r))
+}
+
 // New returns a new instance of Package.
 func New() *Package {
 	return &Package{
@@ -545,7 +556,8 @@ func New() *Package {
 		reTableNameCheck:            regexp.MustCompile(` TableName\(\) string \{\n\s+return "(.*?)"`),
 		reTableAliasCheck:           regexp.MustCompile(` TableAlias\(\) string \{\n\s+return "(.*?)"`),
 
-		rePublicMethodsCheck:     regexp.MustCompile(`(?m)^func \(\w+ \*\w+\) ([A-Z]\w+)\((.*?)\)( {$| ([^(][^\s]+) {$| \((.*?)\) {$)`),
+		rePublicMethodsCheck: regexp.MustCompile(
+			`(?m)^func \(\w+ \*\w+\) ([A-Z]\w+)\((.*?)\)( {$| ([^(][^\s]+) {$| \((.*?)\) {$)`),
 		reServicesCheck:          regexp.MustCompile(`\s+(\w+)\s+(\w+\.\w+)`),
 		reImportBlockCheck:       regexp.MustCompile(`(?s)import\ \(\n(.*?)\n\)`),
 		reStoreStructBlockCheck:  regexp.MustCompile(`(?s)type ([a-zA-Z]+) struct \{\n(.*?)\n\}\n`),

@@ -1,0 +1,57 @@
+{
+	"Spew dump": {
+		"scope": "go",
+        "prefix": "dump",
+        "body": [
+            "spew.Dump(${1:data})",
+        ],
+        "description": "spew.Dump() a variable",
+	},
+	"Error check return": {
+		"scope": "go",
+        "prefix": "errr",
+        "body": [
+            "if err != nil {",
+            "\treturn errors.Trace(err)",
+            "}"
+        ],
+        "description": "Render Internal Server Error on Context",
+	},
+    "Struct Setter Getter": {
+		"scope": "go",
+        "prefix": "gs",
+        "body": [
+            "// Get${3:PropertyUpperCase} gets ${4:property}.",
+            "func (${1:variable} *${2:structName}) Get${3:PropertyUpperCase}() ${5:type} {",
+            "\t return ${1:variable}.${4:property}",
+            "}\n",
+            "// Set${3:PropertyUpperCase} sets ${4:property}.",
+            "func (${1:variable} *${2:structName}) Set${3:PropertyUpperCase}(${4:property} ${5:type}) {",
+            "\t ${1:variable}.${4:property} = ${4:property}",
+            "}",
+        ],
+        "description": "Create Setter and Getter for struct",
+    },
+    "Struct func": {
+		"scope": "go",
+        "prefix": "sfunc",
+        "body": [
+            "func (${1:variable} ${2:struct}) ${3:functionName} ${4:returns} {",
+            "\t${5}",
+            "}"
+        ],
+        "description": "Create Setter and Getter for struct",
+    },
+    "New struct func": {
+		"scope": "go",
+        "prefix": "nfunc",
+        "body": [
+            "// New returns a new instance of ${1:structName}.",
+            "func New(${3}) (*${1:structName}, error) {",
+            "\t${2:variable} := &${1:structName}{${4}}",
+            "\treturn ${2:variable}, nil",
+            "}"
+        ],
+        "description": "Create Setter and Getter for struct",
+    }
+}
