@@ -61,7 +61,7 @@ func main() {
 			log.Fatal(errors.ErrorStack(err))
 		}
 		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+
-			"_synthesized.go", entityData, 0644); err != nil {
+			"_synthesized.go", entityData, 0600); err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
 
@@ -70,7 +70,7 @@ func main() {
 			log.Fatal(errors.ErrorStack(err))
 		}
 		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+
-			"_synthesized_test.go", entityTestData, 0644); err != nil {
+			"_synthesized_test.go", entityTestData, 0600); err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
 
@@ -83,7 +83,7 @@ func main() {
 				log.Fatal(errors.ErrorStack(err))
 			}
 			if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+
-				"_synthesized.go", entityData, 0644); err != nil {
+				"_synthesized.go", entityData, 0600); err != nil {
 				log.Fatal(errors.ErrorStack(err))
 			}
 
@@ -92,7 +92,7 @@ func main() {
 				log.Fatal(errors.ErrorStack(err))
 			}
 			if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+
-				"_synthesized_test.go", entityTestData, 0644); err != nil {
+				"_synthesized_test.go", entityTestData, 0600); err != nil {
 				log.Fatal(errors.ErrorStack(err))
 			}
 		}
@@ -101,7 +101,7 @@ func main() {
 		if err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
-		if err := ioutil.WriteFile(pkg.Path()+"/store_synthesized.go", storeData, 0644); err != nil {
+		if err := ioutil.WriteFile(pkg.Path()+"/store_synthesized.go", storeData, 0600); err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
 
