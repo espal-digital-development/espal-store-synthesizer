@@ -1,6 +1,6 @@
 run:
   concurrency: 4
-  timeout: 30s
+  timeout: 60s
   issues-exit-code: 25
 linters:
   enable:

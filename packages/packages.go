@@ -267,7 +267,7 @@ func (p *Package) BuildMetaData(path string) error {
 
 func (p *Package) storeFromFile(b []byte) error {
 	if p.mainEntity == nil {
-		return errors.Errorf("Cannot set the store before the main entity is known")
+		return errors.Errorf("cannot set the store before the main entity is known")
 	}
 	p.store = &Store{
 		_package:            p,
@@ -279,7 +279,7 @@ func (p *Package) storeFromFile(b []byte) error {
 
 	structBlockMatches := p.reStoreStructBlockCheck.FindAllSubmatch(b, 1)
 	if len(structBlockMatches) != 1 {
-		return errors.Errorf("Not one struct found in `%s`", p.name)
+		return errors.Errorf("not one struct found in `%s`", p.name)
 	}
 	p.store.structName = string(structBlockMatches[0][1])
 
@@ -342,7 +342,7 @@ func (p *Package) storeFromFile(b []byte) error {
 						returnValue.name = string(returnValueChunks[0])
 						returnValue._type = string(returnValueChunks[1])
 					} else {
-						return errors.Errorf("Return values for `%s` : `%s` should be either 1 or 2, not %d",
+						return errors.Errorf("return values for `%s` : `%s` should be either 1 or 2, not %d",
 							p.name, p.store.structName, len(returnValueChunks))
 					}
 					function.returnValues = append(function.returnValues, returnValue)
@@ -454,7 +454,7 @@ func (p *Package) entityFromFile(b []byte) (*Entity, error) {
 				property._type = string(bytes.TrimRight(chunks[0], " "))
 				property.comment = string(bytes.Trim(chunks[1], " "))
 			} else {
-				return nil, errors.Errorf("Found more than 2 chunks. This is probably caused by multiple comment //.")
+				return nil, errors.Errorf("found more than 2 chunks. This is probably caused by multiple comment //.")
 			}
 		} else {
 			property._type = string(bytes.TrimRight(line[2], " "))
