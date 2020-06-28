@@ -269,13 +269,8 @@ func (p *Package) storeFromFile(b []byte) error {
 	if p.mainEntity == nil {
 		return errors.Errorf("cannot set the store before the main entity is known")
 	}
-	p.store = &Store{
-		_package:            p,
-		mainEntity:          p.mainEntity,
-		hasPrivateNewMethod: bytes.Contains(b, []byte("\nfunc new(")),
-		hasPublicNewMethod:  bytes.Contains(b, []byte("\nfunc New(")),
-		hasBuildQueriesFunc: bytes.Contains(b, []byte(" buildQueries() ")),
-	}
+	p.store = newStore(p, p.mainEntity, bytes.Contains(b, []byte("\nfunc new(")),
+		bytes.Contains(b, []byte("\nfunc New(")), bytes.Contains(b, []byte(" buildQueries() ")))
 
 	structBlockMatches := p.reStoreStructBlockCheck.FindAllSubmatch(b, 1)
 	if len(structBlockMatches) != 1 {
@@ -526,14 +521,6 @@ func (p *Package) entityFromFile(b []byte) (*Entity, error) {
 	entity.hasPublicNewMethod = bytes.Contains(b, []byte("func New"))
 
 	return entity, nil
-}
-
-func lowerFirst(s string) string {
-	if s == "" {
-		return ""
-	}
-	r, n := utf8.DecodeRuneInString(s)
-	return string(unicode.ToLower(r)) + s[n:]
 }
 
 func getFirstLetterLowercase(s string) string {

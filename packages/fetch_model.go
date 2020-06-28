@@ -1,5 +1,6 @@
 package packages
 
+// nolint:lll
 const fetchModel = `func (#STRUCT_VAR_NAME *#STRUCT_NAME) fetch(query string, withCreators bool, params ...interface{}) (result []*#ENTITY_STRUCT_NAME, ok bool, err error) {
 	rows, err := #STRUCT_VAR_NAME.selecterDatabase.Query(query, params...)
 	if err == sql.ErrNoRows {

@@ -5,15 +5,6 @@ import (
 	"strings"
 )
 
-var (
-	entityCreatorProperties = map[string]bool{
-		"createdByFirstName": true,
-		"createdBySurname":   true,
-		"updatedByFirstName": true,
-		"updatedBySurname":   true,
-	}
-)
-
 // Service defines an injected service into the Store object.
 type Service struct {
 	name        string
@@ -33,6 +24,8 @@ type Store struct {
 	hasPrivateNewMethod bool
 	hasPublicNewMethod  bool
 	hasBuildQueriesFunc bool
+
+	entityCreatorProperties map[string]bool
 }
 
 // VariableName returns a variable name the store uses in method bodies.
@@ -136,7 +129,7 @@ func (s *Store) BuildFileOutput() ([]byte, error) {
 		entityFields := strings.Builder{}
 		var firstHad bool
 		for _, property := range s.mainEntity.properties {
-			if _, ok := entityCreatorProperties[property.Name()]; ok {
+			if _, ok := s.entityCreatorProperties[property.Name()]; ok {
 				continue
 			}
 			if strings.Contains(property.Comment(), "@synthesize-no-db-field") {
@@ -151,7 +144,7 @@ func (s *Store) BuildFileOutput() ([]byte, error) {
 		firstHad = false
 		creatorFields := strings.Builder{}
 		for _, property := range s.mainEntity.properties {
-			if _, ok := entityCreatorProperties[property.Name()]; !ok {
+			if _, ok := s.entityCreatorProperties[property.Name()]; !ok {
 				continue
 			}
 			if firstHad {
@@ -240,4 +233,21 @@ func (s *Store) BuildTestFileOutput() ([]byte, error) {
 	// TODO :: 777777 Implement
 
 	return output.Bytes(), nil
+}
+
+func newStore(pkg *Package, mainEntity *Entity, hasPrivateNewMethod bool, hasPublicNewMethod bool,
+	hasBuildQueriesFunc bool) *Store {
+	return &Store{
+		_package:            pkg,
+		mainEntity:          mainEntity,
+		hasPrivateNewMethod: hasPrivateNewMethod,
+		hasPublicNewMethod:  hasPublicNewMethod,
+		hasBuildQueriesFunc: hasBuildQueriesFunc,
+		entityCreatorProperties: map[string]bool{
+			"createdByFirstName": true,
+			"createdBySurname":   true,
+			"updatedByFirstName": true,
+			"updatedBySurname":   true,
+		},
+	}
 }
