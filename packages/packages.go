@@ -544,7 +544,7 @@ func New() *Package {
 		reTableAliasCheck:           regexp.MustCompile(` TableAlias\(\) string \{\n\s+return "(.*?)"`),
 
 		rePublicMethodsCheck: regexp.MustCompile(
-			`(?m)^func \(\w+ \*\w+\) ([A-Z]\w+)\((.*?)\)( {$| ([^(][^\s]+) {$| \((.*?)\) {$)`),
+			`(?ms)^func \(\w+ \*\w+\) ([A-Z]\w+)\((.*?)\)( {$| ([^(][^\s]+) {$| \((.*?)\) {$)`),
 		reServicesCheck:          regexp.MustCompile(`\s+(\w+)\s+(\w+\.\w+)`),
 		reImportBlockCheck:       regexp.MustCompile(`(?s)import\ \(\n(.*?)\n\)`),
 		reStoreStructBlockCheck:  regexp.MustCompile(`(?s)type ([a-zA-Z]+) struct \{\n(.*?)\n\}\n`),
