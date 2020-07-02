@@ -1,7 +1,7 @@
 run:
-  concurrency: 4
-  timeout: 60s
-  issues-exit-code: 25
+  concurrency: 2
+  timeout: 30s
+  issues-exit-code: 3
 linters-settings:
   gocritic:
     disabled-checks:
@@ -28,24 +28,15 @@ linters:
     - goconst
     - gocognit
     - asciicheck
-    - gofmt
-    - goimports
-    - depguard # This probably needs custom configuration
     - misspell
     - unparam
     - gochecknoinits
-    - whitespace
     - goprintffuncname
     - gomnd
     - goerr113
-    - gomodguard # This probably needs custom configuration
     - testpackage
     - nestif
     - nolintlint
-    - dupl
-
-    # These are enabled, but can slow down global scanning.
-    # Disable them if you want to scan other things more quickly.
     - gocyclo
     - lll
     - dogsled
@@ -55,10 +46,16 @@ linters:
     - gocritic
     - funlen
     - godot
+    - gochecknoglobals
+    - rowserrcheck
 
     # Unused (mutliple reasons):
-    - rowserrcheck # It already checks the extra error
-    - maligned # These changes are very small (might be fun for some tweaking later)
-    - gochecknoglobals # Can't disable test files, which uses many variable
-    # - godox # Maybe sbe handy to quickly find TODO's, but might as well just use search
+    # - gofmt # Not used as formatter
+    # - goimports # Not used as formatter
+    # - depguard # This probably needs custom configuration
+    # - gomodguard # This probably needs custom configuration
+    # - whitespace # The exclude rules for .qtpl aren't working..
+    # - dupl # We intentionally use duplicated code in places
+    # - maligned # These changes are very small (might be fun for some tweaking later)
+    # - godox # Maybe be handy to quickly find TODO's, but might as well just use search
     # - wsl # Too aggressive
