@@ -23,12 +23,14 @@ type Entity struct {
 	variableName  string
 	interfaceName string
 	// interfaceMethods      []*Function
-	extraInterfaceMethods []*Function
-	properties            []*Property
-	tableName             string
-	tableAlias            string
-	hasPrivateNewMethod   bool
-	hasPublicNewMethod    bool
+	extraInterfaceMethods                 []*Function
+	properties                            []*Property
+	tableName                             string
+	tableAlias                            string
+	hasPrivateNewMethod                   bool
+	hasPublicNewMethod                    bool
+	skipPropertiesForInterface            map[string]bool
+	skipPropertiesForTranslationInterface map[string]bool
 }
 
 // IsPrimaryEntity returns if this entity is the package's primary e.
@@ -124,12 +126,12 @@ func (e *Entity) BuildFileOutput() ([]byte, error) {
 		output.WriteString("\n")
 	}
 	for _, property := range e.properties {
-		if _, ok := skipPropertiesForInterface[property.Name()]; ok {
+		if _, ok := e.skipPropertiesForInterface[property.Name()]; ok {
 			continue
 		}
 
 		if e.IsTranslation() {
-			if _, ok := skipPropertiesForTranslationInterface[property.Name()]; ok {
+			if _, ok := e.skipPropertiesForTranslationInterface[property.Name()]; ok {
 				continue
 			}
 		}
@@ -438,5 +440,30 @@ func (e *Entity) processProperties(output io.StringWriter) {
 		output.WriteString("\t\tt.Fatal(" + `"Getter did not return the Set value"` + ")\n")
 		output.WriteString("\t}\n")
 		output.WriteString("}\n")
+	}
+}
+
+func newEntity(p *Package, bytesData []byte) *Entity {
+	return &Entity{
+		_package:            p,
+		properties:          []*Property{},
+		hasPrivateNewMethod: bytes.Contains(bytesData, []byte("\nfunc new(")),
+		hasPublicNewMethod:  bytes.Contains(bytesData, []byte("\nfunc New(")),
+		skipPropertiesForInterface: map[string]bool{
+			"id":                 true,
+			"createdByID":        true,
+			"updatedByID":        true,
+			"createdAt":          true,
+			"updatedAt":          true,
+			"createdByFirstName": true,
+			"createdBySurname":   true,
+			"updatedByFirstName": true,
+			"updatedBySurname":   true,
+		},
+		skipPropertiesForTranslationInterface: map[string]bool{
+			"language": true,
+			"field":    true,
+			"value":    true,
+		},
 	}
 }

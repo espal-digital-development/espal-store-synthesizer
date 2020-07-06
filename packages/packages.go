@@ -13,25 +13,6 @@ import (
 	"github.com/mattn/go-zglob"
 )
 
-var (
-	skipPropertiesForInterface = map[string]bool{
-		"id":                 true,
-		"createdByID":        true,
-		"updatedByID":        true,
-		"createdAt":          true,
-		"updatedAt":          true,
-		"createdByFirstName": true,
-		"createdBySurname":   true,
-		"updatedByFirstName": true,
-		"updatedBySurname":   true,
-	}
-	skipPropertiesForTranslationInterface = map[string]bool{
-		"language": true,
-		"field":    true,
-		"value":    true,
-	}
-)
-
 // Package wrapping store structure.
 type Package struct {
 	mainEntity *Entity
@@ -331,12 +312,13 @@ func (p *Package) storeFromFile(b []byte) error {
 				for _, returnValuesChunk := range returnValuesChunks {
 					returnValueChunks := bytes.SplitN(returnValuesChunk, []byte(" "), 2)
 					returnValue := &FunctionReturnValue{}
-					if len(returnValueChunks) == 1 {
+					switch {
+					case len(returnValueChunks) == 1:
 						returnValue._type = string(returnValueChunks[0])
-					} else if len(returnValueChunks) == 2 {
+					case len(returnValueChunks) == 2:
 						returnValue.name = string(returnValueChunks[0])
 						returnValue._type = string(returnValueChunks[1])
-					} else {
+					default:
 						return errors.Errorf("return values for `%s` : `%s` should be either 1 or 2, not %d",
 							p.name, p.store.structName, len(returnValueChunks))
 					}
@@ -420,12 +402,7 @@ func (p *Package) addEntityFromFile(b []byte) error {
 }
 
 func (p *Package) entityFromFile(b []byte) (*Entity, error) {
-	entity := &Entity{
-		_package:            p,
-		properties:          []*Property{},
-		hasPrivateNewMethod: bytes.Contains(b, []byte("\nfunc new(")),
-		hasPublicNewMethod:  bytes.Contains(b, []byte("\nfunc New(")),
-	}
+	entity := newEntity(p, b)
 
 	occurrences := len(p.reSynthesizeOccurrences.FindAll(b, 2))
 	if occurrences != 1 {
