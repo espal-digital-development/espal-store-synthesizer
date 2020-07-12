@@ -26,11 +26,10 @@
 		]
 	},
 	"settings": {
+		"eslint.enable": true,
 		"go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
 		"search.exclude": {
-			"**/.DS_store": true,
 			"**/.git": true,
-			"**/vendor": true,
 		},
 		"search.useIgnoreFiles": true,
 		"editor.wordWrap": "bounded",
@@ -41,7 +40,11 @@
 		"prettier.trailingComma": "none",
 		"prettier.semi": true,
 		"editor.formatOnSave": false,
+		"go.formatTool": "goimports",
+		"go.lintTool": "golangci-lint",
+		"go.coverOnSave": true,
 		"go.coverOnSingleTest": true,
-		"go.lintTool":"golangci-lint"
+		"go.coverOnSingleTestFile": true,
+		"go.coverOnTestPackage": true
 	}
 }
