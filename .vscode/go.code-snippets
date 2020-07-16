@@ -15,7 +15,17 @@
             "\treturn errors.Trace(err)",
             "}"
         ],
-        "description": "Render Internal Server Error on Context",
+        "description": "Quick error check with Trace wrapper return",
+    },
+    "Error check if return": {
+		"scope": "go",
+        "prefix": "iferr",
+        "body": [
+            "if err := ${1:caller}; err != nil {",
+            "\treturn errors.Trace(err)",
+            "}"
+        ],
+        "description": "Quick error if caller check with Trace wrapper return",
 	},
     "Struct Setter Getter": {
 		"scope": "go",
