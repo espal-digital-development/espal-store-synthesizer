@@ -42,7 +42,6 @@
 		"editor.formatOnSave": false,
 		"go.formatTool": "goimports",
 		"go.lintTool": "golangci-lint",
-		"go.coverOnSave": true,
 		"go.coverOnSingleTest": true,
 		"go.coverOnSingleTestFile": true,
 		"go.coverOnTestPackage": true
