@@ -59,8 +59,8 @@ func (p *Package) Entities() []*Entity {
 	return p.entities
 }
 
-// BuildMetaData collects all the package information from the path
-// and builds and fills the necessary objects.
+// BuildMetaData collects all the package information from the path and builds and fills the necessary objects.
+// nolint:funlen,gocognit,gocyclo
 func (p *Package) BuildMetaData(path string) error {
 	entries, err := zglob.Glob(path + "/*.go")
 	if err != nil {
@@ -246,6 +246,7 @@ func (p *Package) BuildMetaData(path string) error {
 	return nil
 }
 
+// nolint:funlen,gocognit
 func (p *Package) storeFromFile(b []byte) error {
 	if p.mainEntity == nil {
 		return errors.Errorf("cannot set the store before the main entity is known")
@@ -266,7 +267,7 @@ func (p *Package) storeFromFile(b []byte) error {
 	methods := p.rePublicMethodsCheck.FindAllSubmatch(b, -1)
 	services := p.reServicesCheck.FindAllSubmatch(structBlockMatches[0][2], -1)
 
-	if (len(services) > 0 || len(methods) > 0) && !bytes.Contains(b, []byte("\nfunc New(")) {
+	if (len(services) > 0 || len(methods) > 0) && !bytes.Contains(b, []byte("\nfunc New(")) { // nolint:nestif
 		for _, service := range services {
 			p.store.services = append(p.store.services, &Service{
 				name:        string(service[1]),
@@ -401,6 +402,7 @@ func (p *Package) addEntityFromFile(b []byte) error {
 	return nil
 }
 
+// nolint:funlen,gocognit
 func (p *Package) entityFromFile(b []byte) (*Entity, error) {
 	entity := newEntity(p, b)
 
@@ -439,7 +441,7 @@ func (p *Package) entityFromFile(b []byte) (*Entity, error) {
 	}
 
 	extraMethods := p.reExtraInterfaceMethods.FindSubmatch(b)
-	if len(extraMethods) == 3 && bytes.Equal(extraMethods[1], []byte(strings.ToLower(entity.name))) {
+	if len(extraMethods) == 3 && bytes.Equal(extraMethods[1], []byte(strings.ToLower(entity.name))) { // nolint:nestif
 		methods := p.reInterfaceMethodLinesCheck.FindAllSubmatch(b, -1)
 		for _, method := range methods {
 			interfaceMethod := &Function{

@@ -19,7 +19,7 @@ issues:
       source: len\(.*?\) == \d+
     - linters:
       - errcheck
-      text: ".WriteString"
+      text: "\\w+\\.WriteString"
 linters:
   enable:
     - bodyclose
