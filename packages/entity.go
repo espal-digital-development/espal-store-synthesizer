@@ -38,8 +38,7 @@ func (e *Entity) IsPrimaryEntity() bool {
 	return strings.ToLower(e.name) == e.PackageName()
 }
 
-// ContainsBytesType returns if the entity contains a property of the
-// byte-array type.
+// ContainsBytesType returns if the entity contains a property of the byte-array type.
 func (e *Entity) ContainsBytesType() bool {
 	for _, property := range e.properties {
 		if property._type == "[]byte" {
@@ -49,8 +48,7 @@ func (e *Entity) ContainsBytesType() bool {
 	return false
 }
 
-// HasOptionalCreator return if the entity has a creatorID field that is
-// optional.
+// HasOptionalCreator return if the entity has a creatorID field that is optional.
 func (e *Entity) HasOptionalCreator() bool {
 	for _, property := range e.properties {
 		if property.name == "createdByID" && property._type == "*string" {

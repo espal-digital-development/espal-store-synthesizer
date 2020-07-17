@@ -19,8 +19,7 @@ type Function struct {
 	returnValues []*FunctionReturnValue
 }
 
-// ContainsNamedReturnValue returns whether the given function contains
-// a named return value like `(err error)`.
+// ContainsNamedReturnValue returns whether the given function contains a named return value like `(err error)`.
 func (f *Function) ContainsNamedReturnValue() bool {
 	for _, returnValue := range f.returnValues {
 		if returnValue.name != "" {
