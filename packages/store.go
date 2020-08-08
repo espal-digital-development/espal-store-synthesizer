@@ -30,9 +30,11 @@ type Store struct {
 
 // VariableName returns a variable name the store uses in method bodies.
 func (s *Store) VariableName() string {
-	if s.variableName == "" {
-		s.variableName = getFirstLetterLowercase(s.structName)
-	}
+	// if s.variableName == "" {
+	// 	s.variableName = getFirstLetterLowercase(s.structName)
+	// }
+	// return s.variableName
+	s.variableName = "s"
 	return s.variableName
 }
 
