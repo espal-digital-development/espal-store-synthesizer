@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/espal-digital-development/espal-store-synthesizer/meta"
 	"github.com/espal-digital-development/espal-store-synthesizer/packages"
 	"github.com/juju/errors"
 	"github.com/mattn/go-zglob"
@@ -22,14 +23,21 @@ func main() {
 		storesPath += "/stores"
 	}
 
-	pkgs, err := collectPackages(storesPath)
+	packages, err := collectPackages(storesPath)
 	if err != nil {
 		log.Fatal(errors.ErrorStack(err))
 	}
-	for _, pkg := range pkgs {
+	for _, pkg := range packages {
 		if err := buildOutputForPackage(pkg); err != nil {
 			log.Fatal(errors.ErrorStack(err))
 		}
+	}
+	meta, err := meta.New()
+	if err != nil {
+		log.Fatal(errors.ErrorStack(err))
+	}
+	if err := meta.Build(packages); err != nil {
+		log.Fatal(errors.ErrorStack(err))
 	}
 
 	if out, err := exec.Command("go", "fmt", storesPath+"/...").Output(); err != nil {
