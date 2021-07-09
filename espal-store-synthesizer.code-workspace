@@ -26,7 +26,6 @@
 		]
 	},
 	"settings": {
-		"eslint.enable": true,
 		"go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
 		"search.exclude": {
 			"**/.git": true,
