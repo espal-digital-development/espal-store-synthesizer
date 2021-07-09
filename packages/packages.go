@@ -13,6 +13,12 @@ import (
 	"github.com/mattn/go-zglob"
 )
 
+const (
+	parametersSplitParts        = 2
+	returnValuesSplitParts      = 2
+	synthesizeOccurrencesAmount = 2
+)
+
 // Package wrapping store structure.
 type Package struct {
 	mainEntity *Entity
@@ -183,7 +189,7 @@ func (p *Package) BuildMetaData(path string) error {
 
 			parameters := bytes.Split(method[2], []byte(", "))
 			for _, parameter := range parameters {
-				parameterParts := bytes.SplitN(parameter, []byte(" "), 2)
+				parameterParts := bytes.SplitN(parameter, []byte(" "), parametersSplitParts)
 				function.parameters = append(function.parameters, &FunctionParameter{
 					name:  string(parameterParts[0]),
 					_type: string(parameterParts[1]),
@@ -193,7 +199,7 @@ func (p *Package) BuildMetaData(path string) error {
 			returnValues := bytes.Split(bytes.TrimRight(bytes.TrimRight(bytes.TrimLeft(
 				bytes.Trim(method[3], " "), "("), " {"), ")"), []byte(", "))
 			for _, returnValue := range returnValues {
-				returnValueParts := bytes.SplitN(returnValue, []byte(" "), 2)
+				returnValueParts := bytes.SplitN(returnValue, []byte(" "), parametersSplitParts)
 				function.returnValues = append(function.returnValues, &FunctionReturnValue{
 					name:  string(returnValueParts[0]),
 					_type: string(returnValueParts[1]),
@@ -300,7 +306,7 @@ func (p *Package) storeFromFile(b []byte) error {
 			if len(method[2]) > 0 {
 				parametersChunks := bytes.Split(method[2], []byte(", "))
 				for _, parametersChunk := range parametersChunks {
-					parameterChunks := bytes.SplitN(parametersChunk, []byte(" "), 2)
+					parameterChunks := bytes.SplitN(parametersChunk, []byte(" "), parametersSplitParts)
 					function.parameters = append(function.parameters, &FunctionParameter{
 						name:  string(parameterChunks[0]),
 						_type: string(parameterChunks[1]),
@@ -311,7 +317,7 @@ func (p *Package) storeFromFile(b []byte) error {
 			if len(method[5]) > 0 {
 				returnValuesChunks := bytes.Split(method[5], []byte(", "))
 				for _, returnValuesChunk := range returnValuesChunks {
-					returnValueChunks := bytes.SplitN(returnValuesChunk, []byte(" "), 2)
+					returnValueChunks := bytes.SplitN(returnValuesChunk, []byte(" "), returnValuesSplitParts)
 					returnValue := &FunctionReturnValue{}
 					switch {
 					case len(returnValueChunks) == 1:
@@ -406,7 +412,7 @@ func (p *Package) addEntityFromFile(b []byte) error {
 func (p *Package) entityFromFile(b []byte) (*Entity, error) {
 	entity := newEntity(p, b)
 
-	occurrences := len(p.reSynthesizeOccurrences.FindAll(b, 2))
+	occurrences := len(p.reSynthesizeOccurrences.FindAll(b, synthesizeOccurrencesAmount))
 	if occurrences != 1 {
 		return nil, errors.Errorf("`%s` entity files must have one and only one @synthesize marking", p.path)
 	}

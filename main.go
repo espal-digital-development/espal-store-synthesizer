@@ -10,6 +10,7 @@ import (
 
 	"github.com/espal-digital-development/espal-store-synthesizer/meta"
 	"github.com/espal-digital-development/espal-store-synthesizer/packages"
+	"github.com/espal-digital-development/system/permissions"
 	"github.com/juju/errors"
 	"github.com/mattn/go-zglob"
 )
@@ -86,7 +87,7 @@ func buildOutputForPackage(pkg *packages.Package) error {
 		return errors.Trace(err)
 	}
 	if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+
-		"_synthesized.go", entityData, 0600); err != nil {
+		"_synthesized.go", entityData, permissions.UserReadWrite); err != nil {
 		return errors.Trace(err)
 	}
 
@@ -95,7 +96,7 @@ func buildOutputForPackage(pkg *packages.Package) error {
 		return errors.Trace(err)
 	}
 	if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(pkg.MainEntity().Name())+
-		"_synthesized_test.go", entityTestData, 0600); err != nil {
+		"_synthesized_test.go", entityTestData, permissions.UserReadWrite); err != nil {
 		return errors.Trace(err)
 	}
 
@@ -108,7 +109,7 @@ func buildOutputForPackage(pkg *packages.Package) error {
 			return errors.Trace(err)
 		}
 		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+
-			"_synthesized.go", entityData, 0600); err != nil {
+			"_synthesized.go", entityData, permissions.UserReadWrite); err != nil {
 			return errors.Trace(err)
 		}
 
@@ -117,7 +118,7 @@ func buildOutputForPackage(pkg *packages.Package) error {
 			return errors.Trace(err)
 		}
 		if err := ioutil.WriteFile(pkg.Path()+"/"+strings.ToLower(entity.Name())+
-			"_synthesized_test.go", entityTestData, 0600); err != nil {
+			"_synthesized_test.go", entityTestData, permissions.UserReadWrite); err != nil {
 			return errors.Trace(err)
 		}
 	}
@@ -126,7 +127,8 @@ func buildOutputForPackage(pkg *packages.Package) error {
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if err := ioutil.WriteFile(pkg.Path()+"/store_synthesized.go", storeData, 0600); err != nil {
+	if err := ioutil.WriteFile(pkg.Path()+"/store_synthesized.go", storeData,
+		permissions.UserReadWrite); err != nil {
 		return errors.Trace(err)
 	}
 

@@ -1,4 +1,6 @@
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
+github.com/espal-digital-development/system v0.0.0-20210709095725-fc2ca8344570 h1:PAmqlZHhPpJvI8h0UZCG+c6O+Zioo1z3ed5weW3X+JM=
+github.com/espal-digital-development/system v0.0.0-20210709095725-fc2ca8344570/go.mod h1:3tdwoleZI7ktCYCx5tIRK6Zn7IjrXdPhdwbowTd/EK8=
 github.com/juju/ansiterm v0.0.0-20160907234532-b99631de12cf/go.mod h1:UJSiEoRfvx3hP73CvoARgeLjaIOjybY9vj8PUPPFGeU=
 github.com/juju/clock v0.0.0-20190205081909-9c5c9712527c h1:3UvYABOQRhJAApj9MdCN+Ydv841ETSoy6xLzdmmr/9A=
 github.com/juju/clock v0.0.0-20190205081909-9c5c9712527c/go.mod h1:nD0vlnrUjcjJhqN5WuCWZyzfd5AHZAC9/ajvbSx69xA=

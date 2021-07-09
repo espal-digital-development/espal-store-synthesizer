@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/espal-digital-development/espal-store-synthesizer/packages"
+	"github.com/espal-digital-development/system/permissions"
 	"github.com/juju/errors"
 )
 
@@ -28,7 +29,7 @@ func (m *Meta) Build(packages []*packages.Package) error {
 		}
 	}
 	if createDir {
-		if err := os.Mkdir(m.storesMetaPath, 0700); err != nil {
+		if err := os.Mkdir(m.storesMetaPath, permissions.UserReadWriteExecute); err != nil {
 			return errors.Trace(err)
 		}
 	}
@@ -60,13 +61,15 @@ func (m *Meta) createFile() error {
 	output.WriteString("\treturn &StoresMeta{}, nil\n")
 	output.WriteString("}\n")
 
-	return errors.Trace(ioutil.WriteFile(m.storesMetaPath+"/storesmeta.go", []byte(output.String()), 0600))
+	return errors.Trace(ioutil.WriteFile(m.storesMetaPath+"/storesmeta.go", []byte(output.String()),
+		permissions.UserReadWrite))
 }
 
 func (m *Meta) createTestFile() error {
 	output := &strings.Builder{}
 	output.WriteString("package storesmeta_test\n")
-	return errors.Trace(ioutil.WriteFile(m.storesMetaPath+"/storesmeta_test.go", []byte(output.String()), 0600))
+	return errors.Trace(ioutil.WriteFile(m.storesMetaPath+"/storesmeta_test.go", []byte(output.String()),
+		permissions.UserReadWrite))
 }
 
 // New returns a new instance of Meta.
